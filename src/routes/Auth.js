@@ -1,8 +1,14 @@
 import React, { useState } from "react";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const Auth = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [isUser, setUser] = useState(false);
   const onChange = (event) => {
     const {
       target: { name, value },
@@ -13,13 +19,27 @@ const Auth = () => {
       setPassword(value);
     }
   };
-  const onSubmit = (event) => {
+  const auth = getAuth();
+
+  const onSubmit = async (event) => {
     event.preventDefault();
+    try {
+      let data;
+      if (!isUser) {
+        console.log("회원가입");
+        data = await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        console.log("로그인");
+        data = await signInWithEmailAndPassword(auth, email, password);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <div>
-      <form>
+      <form onSubmit={onSubmit}>
         <input
           name="email"
           type="text"
@@ -34,21 +54,9 @@ const Auth = () => {
           required
           onChange={onChange}
         ></input>
-        <input
-          type="button"
-          value="Continue with Email"
-          onSubmit={onSubmit}
-        ></input>
-        <input
-          type="button"
-          value="Continue with Google"
-          onSubmit={onSubmit}
-        ></input>
-        <input
-          type="button"
-          value="Continue with Github"
-          onSubmit={onSubmit}
-        ></input>
+        <input type="submit" value={isUser ? "Login" : "Sign Up"}></input>
+        <input type="submit" value="Continue with Google"></input>
+        <input type="submit" value="Continue with Github"></input>
       </form>
     </div>
   );
