@@ -25,7 +25,7 @@ const Auth = () => {
     event.preventDefault();
     try {
       let data;
-      if (!isUser) {
+      if (isUser) {
         console.log("회원가입");
         data = await createUserWithEmailAndPassword(auth, email, password);
       } else {
